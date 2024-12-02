@@ -1,0 +1,49 @@
+import React, { useState, useEffect } from "react";
+
+function ProfilePage({ userId }) {
+  const [viewCount, setViewCount] = useState(0);
+  const [yesCount, setYesCount] = useState(0);
+  const [showMetrics, setShowMetrics] = useState(false);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const counts = await getCountsFromDatabase(userId);
+      setViewCount(counts.viewCount);
+      setYesCount(counts.yesCount);
+    };
+    fetchCounts();
+  }, [userId]);
+
+  const handleProfileView = () => {
+    incrementViewCount(userId);
+    setViewCount((prevCount) => prevCount + 1);
+  };
+
+  const handleYesVote = () => {
+    incrementYesCount(userId);
+    setYesCount((prevCount) => prevCount + 1);
+  };
+
+  return (
+    <div>
+      <h1>His & Her Dating App</h1>
+      {/* ... avatar and other profile info */}
+      <button onClick={handleYesVote}>Yes, Date</button>
+
+      <button onClick={() => setShowMetrics(!showMetrics)}>
+        {showMetrics ? "Hide My Metrics" : "Show My Metrics"}
+      </button>
+
+      {showMetrics && (
+        <div>
+          <div>Views: {viewCount}</div>
+          <div>
+            Yes: {yesCount} (
+            {((yesCount / viewCount) * 100).toFixed(2)}%)
+          </div>
+          <div>Pass: {viewCount - yesCount}</div>
+        </div>
+      )}
+    </div>
+  );
+}
